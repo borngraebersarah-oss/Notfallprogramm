@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e1118" />
+  <title>Notfallprogramm</title>
+  <style>
+    :root{
+      --bg:#0e1118;
+      --panel:#171c26;
+      --panel2:#1f2633;
+      --text:#f4f7fb;
+      --muted:#aeb7c7;
+      --line:#2d3647;
+      --accent:#8fb7ff;
+      --good:#98d7b4;
+      --warn:#ffd38b;
+      --danger:#ff9b9b;
+      --radius:22px;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{min-height:100vh}
+    button,input,textarea{font:inherit}
+    button{touch-action:manipulation}
+    .app{
+      max-width:760px;
+      margin:0 auto;
+      min-height:100vh;
+      padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));
+    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .brand{font-weight:800;letter-spacing:.02em;font-size:14px;color:var(--muted);text-transform:uppercase}
+    .iconbtn{
+      background:transparent;border:1px solid var(--line);color:var(--text);border-radius:14px;padding:10px 12px
+    }
+    .card{
+      background:linear-gradient(180deg,var(--panel),#131823);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px;
+      margin-bottom:14px;
+    }
+    h1{font-size:30px;line-height:1.05;margin:0 0 10px}
+    h2{font-size:22px;margin:0 0 12px}
+    h3{font-size:16px;margin:0 0 8px}
+    p{line-height:1.5;margin:8px 0 0}
+    .muted{color:var(--muted)}
+    .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+    .status-item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px}
+    .status-item .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+    .status-item .value{font-weight:750}
+    .primary,.choice,.ghost,.danger-btn{
+      width:100%;border:none;border-radius:16px;padding:15px 16px;font-weight:750;cursor:pointer;margin-top:10px;
+    }
+    .primary{background:var(--accent);color:#0e1625}
+    .choice{background:var(--panel2);color:var(--text);border:1px solid var(--line);text-align:left}
+    .ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+    .danger-btn{background:#5a2027;color:white;border:1px solid #8a3943}
+    .choice:active,.primary:active,.ghost:active,.danger-btn:active{transform:scale(.99)}
+    .menu{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px}
+    .menu button span{display:block;font-size:13px;color:var(--muted);font-weight:500;margin-top:3px}
+    .section-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 2px 8px}
+    .quote{
+      background:#10151e;border-left:4px solid var(--accent);padding:14px 15px;border-radius:10px;margin-top:12px;line-height:1.45
+    }
+    .bigword{font-size:28px;font-weight:900;letter-spacing:-.03em}
+    .tiny{font-size:12px;color:var(--muted)}
+    .row{display:flex;gap:10px}
+    .row>*{flex:1}
+    input,textarea{
+      width:100%;background:#0f141d;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;outline:none
+    }
+    textarea{min-height:90px;resize:vertical}
+    input:focus,textarea:focus{border-color:var(--accent)}
+    .progress{height:10px;border-radius:99px;background:#0d1118;overflow:hidden;margin-top:12px;border:1px solid var(--line)}
+    .progress > div{height:100%;background:var(--accent);width:0%;transition:width .35s ease}
+    .pill{
+      display:inline-block;padding:6px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);font-size:12px;color:var(--muted);margin:4px 4px 0 0
+    }
+
+    .checklist{display:grid;gap:8px;margin-top:14px}
+    .checkrow{
+      display:flex;align-items:center;gap:12px;padding:13px 14px;
+      background:#111721;border:1px solid var(--line);border-radius:14px;
+      cursor:pointer;user-select:none;
+    }
+    .checkrow input{
+      width:22px;height:22px;margin:0;accent-color:var(--accent);flex:0 0 auto;
+    }
+    .checklabel{font-weight:650;line-height:1.35}
+    .checkrow.done{opacity:.55}
+    .checkrow.done .checklabel{text-decoration:line-through}
+
+    .home-item{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)
+    }
+    .home-item:first-child{border-top:none}
+    .home-item button{width:auto;margin:0;padding:9px 11px;border-radius:12px}
+    .timer{
+      font-size:46px;font-weight:900;text-align:center;letter-spacing:.03em;margin:18px 0
+    }
+    .center{text-align:center}
+    .redbutton{
+      width:180px;height:180px;border-radius:50%;margin:24px auto 10px;display:block;border:8px solid #742f36;background:#c54450;color:white;font-weight:900;font-size:17px;box-shadow:0 0 0 8px rgba(197,68,80,.12),0 18px 40px rgba(0,0,0,.35)
+    }
+    .redbutton:active{transform:scale(.97)}
+    .glitch{animation:glitch .18s steps(2,end) 5}
+    @keyframes glitch{
+      0%{transform:translate(0)}
+      25%{transform:translate(3px,-2px)}
+      50%{transform:translate(-2px,2px)}
+      75%{transform:translate(2px,1px)}
+      100%{transform:translate(0)}
+    }
+    .fade{animation:fade .28s ease}
+    @keyframes fade{from{opacity:.2;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .hidden{display:none!important}
+    .notice{padding:12px 14px;border-radius:14px;background:#111721;border:1px dashed var(--line);color:var(--muted);margin-top:12px}
+    .spacer{height:8px}
+    .footer{text-align:center;color:#657087;font-size:11px;margin-top:18px}
+
+    .timer-list{display:grid;gap:10px;margin-top:14px}
+    .timer-card{background:#101722;border:1px solid var(--line);border-radius:16px;padding:14px}
+    .timer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .timer-name{font-weight:800}
+    .timer-left{font-variant-numeric:tabular-nums;font-weight:900;font-size:22px}
+    .timer-sub{font-size:12px;color:var(--muted);margin-top:4px}
+    @media (min-width:640px){
+      .menu{grid-template-columns:1fr 1fr}
+      h1{font-size:38px}
+      .card{padding:24px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">NOTFALLPROGRAMM</div>
+    <button class="iconbtn" id="homeBtn" aria-label="Startseite">⌂</button>
+  </div>
+  <main id="screen"></main>
+  <div class="footer">Keine Lebensberatung. Eher ein sehr kleiner Systemneustart.</div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const screen = $('#screen');
+
+  const state = {
+    homeChecklist: JSON.parse(localStorage.getItem('kk_homeChecklist') || 'null') || [
+      {id:'strom', label:'Strom', done:false},
+      {id:'wasser', label:'Fließendes Wasser', done:false},
+      {id:'toilette', label:'Funktionierende Toilette', done:false},
+      {id:'dusche', label:'Dusche', done:false},
+      {id:'schlafen', label:'Ort zum Schlafen', done:false},
+      {id:'essen', label:'Möglichkeit, Essen zuzubereiten oder zu beschaffen', done:false},
+      {id:'sofa', label:'Sofa, das alle wesentlichen Sofa-Aufgaben erfüllt', done:false}
+    ],
+    fixedHomeTopic: JSON.parse(localStorage.getItem('kk_fixedHomeTopic') || 'null'),
+    currentAlien: null,
+    currentSim: null,
+    timer: null,
+    activeTimers: JSON.parse(localStorage.getItem('np_activeTimers') || '[]')
+  };
+
+  function save(){
+    localStorage.setItem('kk_homeChecklist', JSON.stringify(state.homeChecklist));
+    localStorage.setItem('kk_fixedHomeTopic', JSON.stringify(state.fixedHomeTopic));
+    localStorage.setItem('np_activeTimers', JSON.stringify(state.activeTimers));
+  }
+
+  function cleanupTimers(){
+    const now = Date.now();
+    const before = state.activeTimers.length;
+    state.activeTimers = state.activeTimers.filter(t => t.endsAt > now);
+    if(state.activeTimers.length !== before) save();
+  }
+
+  function addActiveTimer(name, minutes, type='focus'){
+    cleanupTimers();
+    const endsAt = Date.now() + minutes * 60 * 1000;
+    if(type === 'emergency'){
+      state.activeTimers = state.activeTimers.filter(t => t.type !== 'emergency');
+    }
+    state.activeTimers.push({id:'t_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), name, endsAt, type});
+    save();
+    ensureHomeTimerTicker();
+    return endsAt;
+  }
+
+  function removeActiveTimer(id){
+    state.activeTimers = state.activeTimers.filter(t => t.id !== id);
+    save();
+    home();
+  }
+
+  function formatRemaining(ms){
+    const total = Math.max(0, Math.ceil(ms/1000));
+    const m = Math.floor(total/60);
+    const s = total%60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function activeTimersHTML(){
+    cleanupTimers();
+    if(!state.activeTimers.length) return '';
+    return `
+      <div class="section-title">Aktive Timer</div>
+      <div class="timer-list">
+        ${state.activeTimers.map(t => `
+          <div class="timer-card">
+            <div class="timer-head">
+              <div>
+                <div class="timer-name">${esc(t.name)}</div>
+                <div class="timer-sub">${t.type==='emergency'?'Notbetrieb läuft':'Aktiver Timer'}</div>
+              </div>
+              <div class="timer-left" data-timer-id="${t.id}">${formatRemaining(t.endsAt-Date.now())}</div>
+            </div>
+            <button class="ghost" style="margin-top:10px" onclick="app.removeActiveTimer('${t.id}')">Timer beenden</button>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  let homeTicker = null;
+  function ensureHomeTimerTicker(){
+    if(homeTicker) clearInterval(homeTicker);
+    homeTicker = setInterval(() => {
+      cleanupTimers();
+      document.querySelectorAll('[data-timer-id]').forEach(el => {
+        const t = state.activeTimers.find(x => x.id === el.dataset.timerId);
+        if(t) el.textContent = formatRemaining(t.endsAt-Date.now());
+      });
+      if(!state.activeTimers.length && document.querySelector('[data-timer-id]')) home();
+    }, 1000);
+  }
+  function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function render(html){ screen.innerHTML = `<div class="fade">${html}</div>`; window.scrollTo({top:0,behavior:'smooth'}); }
+  function esc(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+  function home(){
+    clearTimer();
+    cleanupTimers();
+    ensureHomeTimerTicker();
+    const activeTopic = state.fixedHomeTopic ? `
+      <div class="notice">
+        <strong>Wohnungsthema noch offen:</strong><br>
+        ${esc(state.fixedHomeTopic)}
+      </div>` : '';
+    render(`
+      <section class="card">
+        <h1>Notfallprogramm</h1>
+        <p class="muted">Problem abgeben, Entscheidung verkleinern oder für 30 Sekunden komplett unnötigen Blödsinn machen.</p>
+        <div class="status-grid">
+          <div class="status-item"><div class="label">Schlaf</div><div class="value">kritisch niedrig</div></div>
+          <div class="status-item"><div class="label">Entscheidungskapazität</div><div class="value">eingeschränkt</div></div>
+          <div class="status-item"><div class="label">Menschen, die etwas wollen</div><div class="value">auffällig viele</div></div>
+          <div class="status-item"><div class="label">Romantik-Tendenzen</div><div class="value">unerwartet erhöht</div></div>
+          <div class="status-item" style="grid-column:1/-1"><div class="label">Gesamtsystem</div><div class="value">erstaunlicherweise noch funktionsfähig</div></div>
+        </div>
+        ${activeTopic}
+        ${activeTimersHTML()}
+        <button class="primary" onclick="app.problemMenu()">PROBLEM AN SYSTEM ÜBERGEBEN</button>
+        <button class="danger-btn" onclick="app.emergency()">🆘 JEMAND WILL WAS VON MIR</button>
+        <button class="ghost" onclick="app.nonsenseMenu()">👽 30 SEKUNDEN KOMPLETTER BLÖDSINN</button>
+      </section>
+    `);
+  }
+
+  function problemMenu(){
+    render(`
+      <section class="card">
+        <div class="section-title">Systemabfrage</div>
+        <h2>Was ist heute das Problem?</h2>
+        <div class="menu">
+          <button class="choice" onclick="app.work()">💼 Arbeit<span>Geschäftsführerzeug, Blockaden, offene Themen</span></button>
+          <button class="choice" onclick="app.homeStuff()">🏠 Zuhause<span>Wohnung, Bestellungen, „eigentlich müsste ich noch …“</span></button>
+          <button class="choice" onclick="app.jga()">💍 JGA<span>Ist das Ding vielleicht längst ausreichend geplant?</span></button>
+          <button class="choice" onclick="app.decisions()">🧠 Zu viele Entscheidungen<span>System übernimmt oder verhängt Denkverbot</span></button>
+          <button class="choice" onclick="app.exhausted()">🪫 Ich bin einfach komplett im Arsch<span>Ressourcensparmodus ohne Selbstoptimierung</span></button>
+          <button class="choice" onclick="app.everything()">🚨 Alles gleichzeitig<span>Wir reduzieren das auf etwas Bearbeitbares</span></button>
+        </div>
+      </section>
+    `);
+  }
+
+  function exhausted(){
+    const variants = [
+      "Bestehende Probleme dürfen für 30 Minuten ohne aktive Betreuung weiterexistieren.",
+      "Das Management wurde informiert. Es hat beschlossen, heute nicht jedes Feuer persönlich zu löschen.",
+      "Nicht alles, was laut ist, ist dringend. Nicht alles, was dringend klingt, ist deins.",
+      "Das System akzeptiert ab sofort nur noch Probleme mit nachgewiesener unmittelbarer Relevanz."
+    ];
+    render(`
+      <section class="card">
+        <div class="section-title">Ressourcensparmodus aktiviert</div>
+        <h2>Für die nächsten 30 Minuten gelten drei Regeln:</h2>
+        <div class="quote">
+          <strong>Niemand wird gerettet.</strong><br>
+          <strong>Nichts wird optimiert.</strong><br>
+          <strong>Keine weitreichenden Entscheidungen.</strong>
+        </div>
+        <p>${rnd(variants)}</p>
+        <button class="primary" onclick="app.exhaustedAccepted()">30 MINUTEN NOTBETRIEB STARTEN</button>
+      </section>
+    `);
+  }
+
+  function exhaustedAccepted(){
+    addActiveTimer('Notbetrieb', 30, 'emergency');
+    render(`
+      <section class="card center">
+        <div class="bigword">NOTBETRIEB LÄUFT</div>
+        <p class="muted">Für 30 Minuten: niemand wird gerettet, nichts wird optimiert, keine weitreichenden Entscheidungen.</p>
+        <div class="notice">Der Timer läuft auch weiter, wenn du auf der Startseite andere Funktionen benutzt.</div>
+        <button class="primary" onclick="app.home()">STARTSEITE</button>
+      </section>
+    `);
+  }
+
+  function emergency(){
+    render(`
+      <section class="card">
+        <div class="section-title">Notfallbutton</div>
+        <h2>Jemand will etwas von dir.</h2>
+        <p>Denk an genau diese eine Aufgabe.</p>
+        <div class="quote"><strong>Musst wirklich DU das machen?</strong></div>
+        <div class="row">
+          <button class="choice center" onclick="app.emergencyMust()">JA, LEIDER</button>
+          <button class="choice center" onclick="app.emergencyDelegate()">NEIN, EIGENTLICH NICHT</button>
+        </div>
+      </section>
+    `);
+  }
+
+  function emergencyMust(){
+    render(`
+      <section class="card">
+        <h2>Okay. Dann nur noch eine Frage.</h2>
+        <p>Kannst oder willst du dich <strong>jetzt</strong> darum kümmern?</p>
+        <div class="row">
+          <button class="choice center" onclick="app.emergencyDoNow()">JA</button>
+          <button class="choice center" onclick="app.emergencySayNo()">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+  function emergencyDoNow(){
+    render(`
+      <section class="card">
+        <h2>Dann mach nur den ersten Schritt.</h2>
+        <p>Nicht das ganze Ding. Nicht die perfekte Lösung. Nur das, was du jetzt konkret anfangen kannst.</p>
+        <button class="primary" onclick="app.startTimer(15)">15-MINUTEN-TIMER STARTEN</button>
+      </section>
+    `);
+  }
+  function emergencySayNo(){
+    render(`
+      <section class="card">
+        <h2>Dann sag es.</h2>
+        <p class="muted">Ohne Roman. Ohne Verteidigungsschrift.</p>
+        <label class="tiny">Ab wann kümmerst du dich frühestens darum?</label>
+        <input id="whenInput" placeholder="z. B. morgen Vormittag">
+        <button class="primary" onclick="app.buildDelaySentence()">SATZ ERZEUGEN</button>
+      </section>
+    `);
+  }
+  function buildDelaySentence(){
+    const when = ($('#whenInput')?.value || 'morgen').trim();
+    const options = [
+      `Nein, dafür habe ich gerade keine Kapazität. Ich kümmere mich frühestens ${when} darum.`,
+      `Das bekomme ich heute nicht sinnvoll unter. Ich nehme es ${when} wieder auf.`,
+      `Heute nicht mehr. Ich kümmere mich ${when} darum.`,
+      `Das passt heute nicht mehr rein. Ich melde mich dazu ${when}.`
+    ];
+    render(`
+      <section class="card">
+        <div class="section-title">Bitte laut aussprechen</div>
+        <div class="quote">${esc(rnd(options))}</div>
+        <button class="ghost" onclick="app.home()">Fertig</button>
+      </section>
+    `);
+  }
+
+  function emergencyDelegate(){
+    render(`
+      <section class="card">
+        <div class="section-title">Delegierungsprotokoll</div>
+        <h2>Sehr gut.</h2>
+        <p>Die Aufgabe muss also nicht zwingend auf deinem Schreibtisch sterben.</p>
+        <label class="tiny">Wer kann sie übernehmen?</label>
+        <input id="delegateName" placeholder="Name oder Rolle">
+        <button class="primary" onclick="app.buildDelegateSentence()">SATZ ERZEUGEN</button>
+      </section>
+    `);
+  }
+  function buildDelegateSentence(){
+    const who = ($('#delegateName')?.value || 'du').trim();
+    const options = [
+      `Darum kümmere ich mich nicht selbst. ${who}, bitte übernimm das und gib mir Bescheid, wenn du an einem Punkt nicht weiterkommst.`,
+      `${who}, bitte übernimm das. Komm nur wieder auf mich zu, wenn du dafür tatsächlich eine Entscheidung von mir brauchst.`,
+      `Das geht an ${who}. Bitte dort übernehmen und nur eskalieren, wenn wirklich etwas von mir benötigt wird.`,
+      `${who} übernimmt das. Ich steige erst wieder ein, wenn eine konkrete Entscheidung bei mir liegt.`
+    ];
+    render(`
+      <section class="card">
+        <div class="section-title">Bitte laut aussprechen oder kopieren</div>
+        <div class="quote">${esc(rnd(options))}</div>
+        <button class="ghost" onclick="app.home()">Fertig</button>
+      </section>
+    `);
+  }
+
+  function work(){
+    render(`
+      <section class="card">
+        <h2>Denk an genau eine Sache, die dich bei der Arbeit gerade nervt.</h2>
+        <p class="muted">Nicht an sieben. Das System hat gefragt.</p>
+        <button class="primary" onclick="app.workCanSolve()">HAB EINE</button>
+      </section>
+    `);
+  }
+  function workCanSolve(){
+    render(`
+      <section class="card">
+        <h2>Kannst du dieses Problem heute tatsächlich lösen?</h2>
+        <div class="row">
+          <button class="choice center" onclick="app.workNow()">JA</button>
+          <button class="choice center" onclick="app.workBlocked()">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+  function workBlocked(){
+    render(`
+      <section class="card">
+        <h2>Was fehlt?</h2>
+        <div class="menu">
+          <button class="choice" onclick="app.workMissing('Information')">Information</button>
+          <button class="choice" onclick="app.workMissing('Entscheidung von jemand anderem')">Entscheidung von jemand anderem</button>
+          <button class="choice" onclick="app.workMissing('Rückmeldung')">Rückmeldung</button>
+          <button class="choice" onclick="app.workMissing('Zeit oder Termin')">Zeit / Termin</button>
+          <button class="choice" onclick="app.workMissing('Nicht mein Problem')">Es liegt schlicht nicht bei mir</button>
+        </div>
+      </section>
+    `);
+  }
+  function workMissing(type){
+    let txt = '';
+    if(type==='Information') txt = 'Dann ist deine Aufgabe nicht „Problem lösen“. Deine Aufgabe ist nur: Information beschaffen oder anfragen.';
+    if(type==='Entscheidung von jemand anderem') txt = 'Das Problem befindet sich gerade auf einem fremden Schreibtisch. Bitte unterlassen Sie den Versuch, es telepathisch von dort zu lösen.';
+    if(type==='Rückmeldung') txt = 'Du wartest. Warten ist kein aktives Projekt. Eine Erinnerung reicht; permanentes inneres Nachfassen ist nicht erforderlich.';
+    if(type==='Zeit oder Termin') txt = 'Dann braucht das Problem einen Termin, nicht weitere Hirnleistung.';
+    if(type==='Nicht mein Problem') txt = 'Ausgezeichnet. Zuständigkeit geklärt. Das System empfiehlt entschiedenes Nicht-Einsammeln fremder Aufgaben.';
+    render(`
+      <section class="card">
+        <div class="section-title">Blockade erkannt</div>
+        <div class="quote">${txt}</div>
+        <button class="ghost" onclick="app.home()">VORGANG SCHLIESSEN</button>
+      </section>
+    `);
+  }
+  function workNow(){
+    render(`
+      <section class="card">
+        <h2>Kannst du jetzt konkret etwas daran tun?</h2>
+        <div class="row">
+          <button class="choice center" onclick="app.startTimer(15)">JA – 15 MINUTEN</button>
+          <button class="choice center" onclick="app.workSchedule()">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+  function workSchedule(){
+    render(`
+      <section class="card">
+        <h2>Dann braucht es keinen weiteren Gedanken.</h2>
+        <p>Lege nur fest, wann du den nächsten konkreten Schritt machst.</p>
+        <input id="workWhen" placeholder="z. B. morgen 09:30">
+        <button class="primary" onclick="app.workScheduled()">FESTLEGEN</button>
+      </section>
+    `);
+  }
+  function workScheduled(){
+    const val = ($('#workWhen')?.value || 'später').trim();
+    render(`
+      <section class="card">
+        <div class="bigword">PARKPLATZ GEFUNDEN</div>
+        <p>Nächster Kontakt mit diesem Problem: <strong>${esc(val)}</strong></p>
+        <p class="muted">Bis dahin ist weiteres Nachdenken keine zusätzliche Leistung.</p>
+        <button class="ghost" onclick="app.home()">Fertig</button>
+      </section>
+    `);
+  }
+
+  function homeStuff(){
+    const checklist = state.homeChecklist.map((x,i)=>`
+      <label class="checkrow ${x.done?'done':''}">
+        <input type="checkbox" ${x.done?'checked':''} onchange="app.toggleHome(${i})">
+        <span class="checklabel">${esc(x.label)}</span>
+      </label>`).join('');
+
+    const fixed = state.fixedHomeTopic ? `
+      <div class="notice">
+        <strong>Aktuelles Wohnungsthema:</strong><br>${esc(state.fixedHomeTopic)}
+        <button class="primary" onclick="app.completeHomeTopic()">IST ERLEDIGT</button>
+      </div>` : '';
+
+    render(`
+      <section class="card">
+        <div class="section-title">Wohnung</div>
+        <h2>Vorhanden?</h2>
+        <p class="muted">Alles abhaken, was schon da ist oder funktioniert. Erledigte Punkte verschwinden nicht – sie werden sichtbar durchgestrichen.</p>
+        <div class="checklist">${checklist}</div>
+        ${fixed}
+        <button class="primary" onclick="app.evaluateHome()">OFFENE PUNKTE ANSEHEN</button>
+      </section>
+    `);
+  }
+  function toggleHome(i){
+    state.homeChecklist[i].done = !state.homeChecklist[i].done;
+    save(); homeStuff();
+  }
+  function evaluateHome(){
+    const open = state.homeChecklist.filter(x=>!x.done);
+
+    if(state.fixedHomeTopic){
+      render(`
+        <section class="card">
+          <div class="section-title">Wohnung</div>
+          <h2>Ein Thema ist bereits fixiert.</h2>
+          <div class="quote"><strong>${esc(state.fixedHomeTopic)}</strong></div>
+          <p class="muted">Solange dieses Thema nicht erledigt ist, eröffnet das System kein zweites.</p>
+          <button class="primary" onclick="app.completeHomeTopic()">IST ERLEDIGT</button>
+          <button class="ghost" onclick="app.homeStuff()">Zurück zur Checkliste</button>
+        </section>
+      `);
+      return;
+    }
+
+    if(open.length){
+      render(`
+        <section class="card">
+          <div class="section-title">Offene Wohnungspunkte</div>
+          <h2>Wähle genau einen Punkt.</h2>
+          <p class="muted">Nicht alle. Nicht „eigentlich müsste ich noch“. Nur das Nächste.</p>
+          <div class="menu">
+            ${open.map(x=>`
+              <button class="choice" onclick='app.selectOpenHomeTopic(${JSON.stringify(x.label)})'>
+                ${esc(x.label)}
+              </button>`).join('')}
+          </div>
+        </section>
+      `);
+      return;
+    }
+
+    render(`
+      <section class="card">
+        <div class="bigword">ALLES VORHANDEN ✓</div>
+        <p>Die aktuelle Wohnungs-Checkliste ist komplett.</p>
+        <div class="quote">Alles Weitere ist ab jetzt Komfort, Dekoration oder menschlicher Größenwahn.</div>
+        <p>Gibt es trotzdem genau <strong>eine</strong> Sache, die deinen Wohlfühlfaktor gerade deutlich erhöhen würde?</p>
+        <div class="row">
+          <button class="choice center" onclick="app.homeComfort()">JA</button>
+          <button class="choice center" onclick="app.homeNoNeed()">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+
+  function selectOpenHomeTopic(label){
+    state.fixedHomeTopic = label;
+    save();
+    render(`
+      <section class="card">
+        <div class="section-title">Nächster Wohnungspunkt</div>
+        <div class="quote"><strong>${esc(label)}</strong></div>
+        <p>Das ist jetzt der eine Punkt, um den du dich als Nächstes kümmerst.</p>
+        <p class="muted">Er bleibt auf der Startseite stehen, bis du ihn als erledigt markierst.</p>
+        <button class="primary" onclick="app.home()">STARTSEITE</button>
+      </section>
+    `);
+  }
+  function homeNoNeed(){
+    render(`
+      <section class="card center">
+        <h2>Hervorragend.</h2>
+        <p>Dann bitte nichts bestellen, nur weil man theoretisch noch irgendetwas verbessern könnte.</p>
+        <button class="ghost" onclick="app.home()">Zurück</button>
+      </section>
+    `);
+  }
+  function homeComfort(){
+    render(`
+      <section class="card">
+        <h2>Welche EINE Sache würde gerade den größten Unterschied machen?</h2>
+        <input id="homeTopic" placeholder="z. B. Lampen im Wohnzimmer">
+        <button class="primary" onclick="app.fixHomeTopic()">DIESES THEMA FIXIEREN</button>
+      </section>
+    `);
+  }
+  function fixHomeTopic(){
+    const v = ($('#homeTopic')?.value || '').trim();
+    if(!v) return;
+    state.fixedHomeTopic = v;
+    save();
+    render(`
+      <section class="card">
+        <div class="section-title">Wohnungsthema fixiert</div>
+        <div class="quote"><strong>${esc(v)}</strong></div>
+        <p>Bis dieses Thema erledigt ist, eröffnet das System kein weiteres Komfortprojekt.</p>
+        <p class="muted">Andere Ideen dürfen existieren. Sie bekommen nur gerade keine Bühne.</p>
+        <button class="ghost" onclick="app.home()">Zurück</button>
+      </section>
+    `);
+  }
+  function completeHomeTopic(){
+    if(!state.fixedHomeTopic) return;
+    const old = state.fixedHomeTopic;
+    const existing = state.homeChecklist.find(x => x.label === old);
+    if(existing){
+      existing.done = true;
+    } else {
+      state.homeChecklist.push({id:'custom_'+Date.now(), label:old, done:true});
+    }
+    state.fixedHomeTopic = null;
+    save();
+    render(`
+      <section class="card">
+        <div class="bigword">ERLEDIGT ✓</div>
+        <p><strong>${esc(old)}</strong> wurde abgehakt.</p>
+        <p class="muted">Beim nächsten Wohnungs-Check bleibt der Punkt sichtbar, aber durchgestrichen.</p>
+        <button class="primary" onclick="app.homeStuff()">WOHNUNG NEU PRÜFEN</button>
+      </section>
+    `);
+  }
+
+  function jga(){
+    const qs = [
+      ['Schlafplatz vorhanden?','jga1'],
+      ['Eine Aktivität vorhanden?','jga2'],
+      ['Essen grundsätzlich lösbar?','jga3'],
+      ['Getränke danach irgendwie auffindbar?','jga4']
+    ];
+    window.jgaAnswers = {};
+    jgaQuestion(0, qs);
+  }
+  function jgaQuestion(i, qs){
+    if(i>=qs.length){
+      const all = Object.values(window.jgaAnswers).every(Boolean);
+      if(all){
+        render(`
+          <section class="card center">
+            <div class="bigword">HERZLICHEN GLÜCKWUNSCH</div>
+            <p>Sie haben erfolgreich einen Junggesellenabschied geplant.</p>
+            <div class="quote">Weitere 17 Stunden Optimierung erhöhen den erwarteten Spaßfaktor laut Systemberechnung um 0,8 %.</div>
+            <button class="primary" onclick="app.home()">PLANUNG EINSTELLEN</button>
+          </section>
+        `);
+      } else {
+        render(`
+          <section class="card">
+            <h2>Es fehlt noch genau eine Kategorie.</h2>
+            <p>Bitte nicht die komplette Veranstaltung neu planen. Schließe nur die erste noch offene Lücke.</p>
+            <button class="ghost" onclick="app.home()">Zurück</button>
+          </section>
+        `);
+      }
+      return;
+    }
+    render(`
+      <section class="card">
+        <div class="section-title">JGA-Projektstatus ${i+1}/${qs.length}</div>
+        <h2>${qs[i][0]}</h2>
+        <div class="row">
+          <button class="choice center" onclick="app.jgaAnswer(${i},true)">JA</button>
+          <button class="choice center" onclick="app.jgaAnswer(${i},false)">NEIN</button>
+        </div>
+      </section>
+    `);
+    window._jgaQs = qs;
+  }
+  function jgaAnswer(i,val){
+    window.jgaAnswers[i]=val;
+    jgaQuestion(i+1, window._jgaQs);
+  }
+
+  function decisions(){
+    render(`
+      <section class="card">
+        <h2>Zu viele Entscheidungen.</h2>
+        <div class="menu">
+          <button class="choice" onclick="app.thoughtBan()">🚫 Heutiges Denkverbot ziehen<span>Das System verbietet dir eine Sorte unnötiger Gedanken.</span></button>
+          <button class="choice" onclick="app.randomDecision()">🎲 System entscheidet<span>Du gibst zwei bis vier Optionen ein. Die Würde des Verfahrens ist zweifelhaft.</span></button>
+        </div>
+      </section>
+    `);
+  }
+  function thoughtBan(){
+    const bans = [
+      "Probleme anderer erwachsener Menschen vorsorglich mitlösen.",
+      "Entscheidungen treffen, für die noch Informationen fehlen.",
+      "Etwas optimieren, das bereits funktioniert.",
+      "Eine Entscheidung zweimal treffen.",
+      "Über Probleme nachdenken, die frühestens nächste Woche relevant werden.",
+      "Auf eine Nachricht reagieren, nur weil sie existiert.",
+      "Sich für eine Entscheidung rechtfertigen, die längst getroffen wurde.",
+      "Ein mögliches Problem behandeln, als wäre es bereits eingetreten.",
+      "Eine Aufgabe freiwillig einsammeln, nur weil du sie schneller könntest.",
+      "Eine Sache perfektionieren, die längst ausreichend gut ist."
+    ];
+    render(`
+      <section class="card center">
+        <div class="section-title">Heutiges Denkverbot</div>
+        <div class="bigword">${esc(rnd(bans))}</div>
+        <p class="muted">Gültig bis morgen. Verstöße werden nicht verfolgt, aber vom System missbilligend registriert.</p>
+        <button class="ghost" onclick="app.home()">Akzeptiert</button>
+      </section>
+    `);
+  }
+  function randomDecision(){
+    render(`
+      <section class="card">
+        <h2>Optionen eingeben</h2>
+        <p class="muted">Mindestens zwei. Höchstens vier. Danach übernimmt hochentwickelte künstliche Intelligenz.*</p>
+        <input id="o1" placeholder="Option 1">
+        <input id="o2" placeholder="Option 2">
+        <input id="o3" placeholder="Option 3 (optional)">
+        <input id="o4" placeholder="Option 4 (optional)">
+        <div class="tiny">* ein Zufallsgenerator</div>
+        <button class="primary" onclick="app.pickDecision()">SYSTEM, ENTSCHEIDE</button>
+      </section>
+    `);
+  }
+  function pickDecision(){
+    const opts=[1,2,3,4].map(i=>($('#o'+i)?.value||'').trim()).filter(Boolean);
+    if(opts.length<2) return;
+    const pick=rnd(opts);
+    render(`
+      <section class="card center">
+        <div class="section-title">Entscheidung getroffen</div>
+        <div class="bigword">${esc(pick)}</div>
+        <p class="muted">Einspruchsfrist: abgelaufen.</p>
+        <button class="ghost" onclick="app.home()">Fertig</button>
+      </section>
+    `);
+  }
+
+  function everything(){
+    render(`
+      <section class="card">
+        <div class="section-title">Alles gleichzeitig erkannt</div>
+        <h2>„Alles gleichzeitig“ ist leider keine bearbeitbare Aufgabe.</h2>
+        <p>Wir reduzieren kurz.</p>
+        <div class="quote">Gibt es <strong>jetzt gerade</strong> ein konkretes Problem?</div>
+        <div class="row">
+          <button class="choice center" onclick="app.everythingYes()">JA</button>
+          <button class="choice center" onclick="app.everythingNo()">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+  function everythingNo(){
+    render(`
+      <section class="card">
+        <h2>Dann simuliert dein Gehirn gerade mögliche zukünftige Probleme.</h2>
+        <p>Dafür besteht im Moment keine Handlungsmöglichkeit.</p>
+        <div class="quote">Vorgang geschlossen, bis tatsächlich etwas passiert.</div>
+        <button class="primary" onclick="app.home()">VORSORGLICHES GRÜBELN EINSTELLEN</button>
+      </section>
+    `);
+  }
+  function everythingYes(){
+    render(`
+      <section class="card">
+        <h2>Kannst du etwas daran ändern?</h2>
+        <div class="row">
+          <button class="choice center" onclick="app.everythingCan()">JA</button>
+          <button class="choice center" onclick="app.everythingCant()">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+  function everythingCan(){
+    render(`
+      <section class="card">
+        <h2>Was ist der nächste konkrete Schritt?</h2>
+        <input id="nextStep" placeholder="Nur ein Schritt">
+        <button class="primary" onclick="app.showNextStep()">FESTLEGEN</button>
+      </section>
+    `);
+  }
+  function showNextStep(){
+    const v=($('#nextStep')?.value||'').trim(); if(!v)return;
+    render(`
+      <section class="card">
+        <div class="quote"><strong>${esc(v)}</strong></div>
+        <p>Das reicht.</p>
+        <p class="muted">Nicht Schritt 2. Nicht Schritt 7. Nicht sämtliche möglichen Folgen. Nur das hier.</p>
+        <button class="primary" onclick="app.startTimer(15)">15 MINUTEN DAFÜR</button>
+      </section>
+    `);
+  }
+  function everythingCant(){
+    render(`
+      <section class="card">
+        <h2>Dann ist weiteres Nachdenken gerade ebenfalls keine Handlung.</h2>
+        <p>Das Problem darf bestehen. Du musst es aber nicht permanent mental beaufsichtigen.</p>
+        <button class="primary" onclick="app.home()">FÜR HEUTE AUS DEM ARBEITSSPEICHER ENTFERNEN</button>
+      </section>
+    `);
+  }
+
+  function nonsenseMenu(){
+    render(`
+      <section class="card">
+        <div class="section-title">Komplett unnötige Abteilung</div>
+        <h2>Wähle deinen Unsinn.</h2>
+        <div class="menu">
+          <button class="choice" onclick="app.forbiddenButton()">🔴 Drücke diesen Button nicht<span>Autonomie-Rekalibrierung</span></button>
+          <button class="choice" onclick="app.smileTest()">😐 Nicht lächeln<span>Sehr ernsthafte Gesichtskontrolle</span></button>
+          <button class="choice" onclick="app.alien()">👽 Alien-Kontakt<span>Interstellare Fragen von zweifelhafter Relevanz</span></button>
+          <button class="choice" onclick="app.simulation()">🪴 Simulationstest<span>Hinweise darauf, dass das hier alles gerendert ist</span></button>
+          <button class="choice" onclick="app.matrix()">💊 Matrix-Test<span>Rote Pille, blaue Pille, schlechte Entscheidungen</span></button>
+          <button class="choice" onclick="app.glitch()">⚠️ Glitch in der Matrix<span>10 Sekunden sinnlose Befehle</span></button>
+        </div>
+      </section>
+    `);
+  }
+
+  function forbiddenButton(){
+    render(`
+      <section class="card center">
+        <h2>DIESEN BUTTON AUF KEINEN FALL DRÜCKEN</h2>
+        <button class="redbutton" onclick="app.forbiddenPressed()">NICHT DRÜCKEN</button>
+        <p class="muted">Das ist keine Metapher. Einfach nicht.</p>
+      </section>
+    `);
+  }
+  function forbiddenPressed(){
+    render(`
+      <section class="card center">
+        <div class="bigword">AUSGEZEICHNET.</div>
+        <p>Du hast soeben gegen eine völlig unnötige Anweisung verstoßen.</p>
+        <div class="quote">Deine Autonomie wurde erfolgreich wiederhergestellt.</div>
+        <button class="primary" onclick="app.nonsenseMenu()">NOCH EINE REGEL MISSACHTEN</button>
+      </section>
+    `);
+  }
+
+  function smileTest(){
+    render(`
+      <section class="card center">
+        <div class="section-title">Gesichtskontrolle</div>
+        <h2>Du darfst jetzt auf keinen Fall lächeln.</h2>
+        <p class="muted">Nicht grinsen. Nicht Mundwinkel bewegen. Einfach ernst bleiben.</p>
+        <div id="smileQuestion" class="hidden">
+          <h2>Hast du gelächelt?</h2>
+          <div class="row">
+            <button class="choice center" onclick="app.smileAnswer(true)">JA</button>
+            <button class="choice center" onclick="app.smileAnswer(false)">NEIN</button>
+          </div>
+        </div>
+      </section>
+    `);
+    setTimeout(() => {
+      $('#smileQuestion')?.classList.remove('hidden');
+    }, 6000);
+  }
+  function smileAnswer(yes){
+    const yesTxt=[
+      "Erwischt. Das System wertet das als erfolgreiche Stimmungsmanipulation.",
+      "Sehr gut. Du bist offenbar leichter zu hacken als gedacht.",
+      "Interessant. Eine lächerlich einfache Anweisung hat gereicht.",
+      "Bestätigt: verbotene Dinge funktionieren weiterhin überdurchschnittlich gut."
+    ];
+    const noTxt=[
+      "Beeindruckend. Emotionale Firewall stabil.",
+      "Verdächtig. Das System vermutet aktive Gesichtskontrolle auf Profi-Niveau.",
+      "Keine Regung? Entweder sehr diszipliniert oder eindeutig Teil der Simulation.",
+      "Test bestanden. Freude weiterhin erfolgreich unterdrückt."
+    ];
+    render(`
+      <section class="card center">
+        <div class="bigword">${yes?'ERWISCHT.':'VERDÄCHTIG.'}</div>
+        <p>${esc(rnd(yes?yesTxt:noTxt))}</p>
+        <button class="ghost" onclick="app.nonsenseMenu()">Weiterer Unsinn</button>
+      </section>
+    `);
+  }
+
+  const alienQuestions = [
+    {
+      q:"Wir beobachten die Menschheit seit 11.000 Jahren. Warum beantworten Menschen E-Mails mit „Danke für die Info“?",
+      opts:["Höflichkeit","Keine Ahnung","Lasst uns bitte in Ruhe"],
+      reply:"Antwort übertragen. Die außerirdische Zivilisation hat den Kontakt zur Erde daraufhin vorübergehend abgebrochen."
+    },
+    {
+      q:"Warum besitzt ihr Schubladen voller Kabel, deren Zweck niemand mehr kennt?",
+      opts:["Man weiß ja nie","Archäologie","Das ist privat"],
+      reply:"Die Aliens haben das Konzept „Kabelschublade“ in ihre Liste unerklärlicher menschlicher Rituale aufgenommen."
+    },
+    {
+      q:"Warum sagt ihr „kurze Frage“ und redet dann zwölf Minuten?",
+      opts:["Soziale Tarnung","Keine Ahnung","Das machen nur andere"],
+      reply:"Deine Antwort wurde als typisch menschliche Selbstüberschätzung klassifiziert."
+    },
+    {
+      q:"Warum habt ihr Meetings, um zu besprechen, was in einem anderen Meeting besprochen werden soll?",
+      opts:["Governance","Tradition","Wir brauchen Hilfe"],
+      reply:"Das Alien-Komitee empfiehlt, die Erde zunächst nicht in die intergalaktische Projektorganisation aufzunehmen."
+    },
+    {
+      q:"Warum öffnet ihr den Kühlschrank erneut, obwohl ihr wisst, dass nichts Neues drin ist?",
+      opts:["Hoffnung","Kontrolle","Vielleicht ist Käse gespawnt"],
+      reply:"Die Theorie vom spontan erscheinenden Käse wird auf Alpha Centauri weiter untersucht."
+    },
+    {
+      q:"Warum sagt ihr „kein Stress“, wenn ganz offensichtlich Stress vorhanden ist?",
+      opts:["Beschwörung","Ironie","Sprachfehler"],
+      reply:"Die Aliens haben „kein Stress“ als irdisches Warnsignal neu katalogisiert."
+    },
+    {
+      q:"Warum laufen Menschen schneller, wenn sie eine Ampel blinken sehen, obwohl sie vorher nicht in Eile waren?",
+      opts:["Panik","Sportlichkeit","Wettkampf gegen Licht"],
+      reply:"Das Verhalten wurde als ritualisierte Herausforderung gegenüber Infrastruktur eingestuft."
+    },
+    {
+      q:"Warum habt ihr für jede App ein Update, aber für Menschen keinen Neustartknopf?",
+      opts:["Designfehler","Gibt es: Schlaf","Bitte nachrüsten"],
+      reply:"Antrag auf menschlichen Neustartknopf wurde an die Entwicklungsabteilung weitergeleitet. Bearbeitungszeit: 3–5 Jahrtausende."
+    },
+    {
+      q:"Warum steht auf Verpackungen „hier öffnen“, wenn Menschen sie trotzdem an einer anderen Stelle aufreißen?",
+      opts:["Autonomie","Misstrauen","Weil wir es können"],
+      reply:"Das System erkennt ausgeprägten menschlichen Widerstand gegen unnötige Anweisungen. Positiv vermerkt."
+    },
+    {
+      q:"Warum sagt ihr „ich bin gleich da“, obwohl ihr noch zu Hause seid?",
+      opts:["Zeit ist relativ","Optimismus","Kommunikationsstrategie"],
+      reply:"Einstein wurde nachträglich rehabilitiert. Eure Zeitangaben sind tatsächlich relativ."
+    }
+  ];
+
+  function alien(){
+    state.currentAlien = rnd(alienQuestions);
+    render(`
+      <section class="card">
+        <div class="section-title">Eingehendes Signal · Herkunft unbekannt</div>
+        <p class="muted">Die folgenden Fragen wurden tatsächlich von Aliens an das System übermittelt. Sie bitten ausdrücklich um eine menschliche Antwort.</p>
+        <h2>${esc(state.currentAlien.q)}</h2>
+        <div class="menu">
+          ${state.currentAlien.opts.map((o,i)=>`<button class="choice" onclick="app.alienAnswer(${i})">${esc(o)}</button>`).join('')}
+        </div>
+      </section>
+    `);
+  }
+  function alienAnswer(i){
+    const extra = [
+      "Signalstärke sinkt. Offenbar wurde gerade irgendwo im Universum eine wichtige Sitzung angesetzt.",
+      "Die Antwort wurde ohne erkennbare Begeisterung protokolliert.",
+      "Ein Alien hat genickt. Ein anderes sah enttäuscht aus.",
+      "Interstellare Bewertung: nachvollziehbar, aber nicht überzeugend.",
+      "Die Menschheit bleibt vorerst unter Beobachtung."
+    ];
+    render(`
+      <section class="card center">
+        <div class="bigword">ANTWORT ÜBERTRAGEN</div>
+        <p>${esc(state.currentAlien.reply)}</p>
+        <div class="notice">${esc(rnd(extra))}</div>
+        <button class="primary" onclick="app.alien()">NÄCHSTE ALIEN-FRAGE</button>
+        <button class="ghost" onclick="app.nonsenseMenu()">Kontakt beenden</button>
+      </section>
+    `);
+  }
+
+  const simScenarios = [
+    {
+      q:"Schau dich um. Gibt es irgendwo eine Pflanze?",
+      yes:"Klassischer Rendering-Trick. Pflanzen werden eingesetzt, um Innenräume glaubwürdiger wirken zu lassen.",
+      no:"Interessant. Entweder sehr reduziertes Leveldesign oder du befindest dich außerhalb der vorgesehenen Kulisse."
+    },
+    {
+      q:"Gibt es in deiner Nähe einen Gegenstand, von dem du nicht exakt weißt, wann du ihn gekauft hast?",
+      yes:"Möglicherweise wurde er mit dem letzten Update eingefügt.",
+      no:"Ungewöhnlich hohe Objektkenntnis. Admin-Rechte können nicht ausgeschlossen werden."
+    },
+    {
+      q:"Ist dir heute irgendwo die Zahl 11:11, 22:22 oder eine andere auffällige Wiederholung begegnet?",
+      yes:"Synchronisationsfehler oder billiges Easter Egg. Beides plausibel.",
+      no:"Die Simulation arbeitet heute offenbar im unauffälligen Modus."
+    },
+    {
+      q:"Hat heute jemand exakt den Satz gesagt, den du gerade selbst gedacht hast?",
+      yes:"NPC-Skriptüberschneidung erkannt.",
+      no:"Keine Überschneidung. Das beweist leider gar nichts."
+    },
+    {
+      q:"Ist irgendwo in deiner Nähe ein Objekt, das völlig sinnlos herumsteht?",
+      yes:"Sehr wahrscheinlich unfertiges Leveldesign.",
+      no:"Das ist statistisch so unwahrscheinlich, dass es erst recht verdächtig ist."
+    },
+    {
+      q:"Hast du heute bereits einen Raum betreten und sofort vergessen, was du dort wolltest?",
+      yes:"Kurzzeitiger Verlust des Quest-Ziels. Bekannter Bug.",
+      no:"Quest-Tracking stabil. Selten."
+    },
+    {
+      q:"Hat sich heute etwas exakt dort befunden, wo du schon dreimal gesucht hattest?",
+      yes:"Objekt wurde vermutlich verspätet nachgeladen.",
+      no:"Rendering derzeit stabil."
+    },
+    {
+      q:"Hast du schon einmal zufällig an jemanden gedacht und kurz danach schreibt diese Person?",
+      yes:"Entweder Zufall oder schlecht kaschierte Vorhersage-Engine.",
+      no:"Kommunikationsmodul verhält sich derzeit unauffällig."
+    },
+    {
+      q:"Gibt es einen Ort, an dem immer dieselben drei Menschen aufzutauchen scheinen?",
+      yes:"Wiederverwendete NPCs sparen Rechenleistung.",
+      no:"Budget der Simulation offenbar großzügig."
+    },
+    {
+      q:"Hat heute irgendein technisches Gerät erst nach genau derselben Handlung funktioniert, die vorher dreimal nichts gebracht hat?",
+      yes:"Klassischer Neustart-Placebo-Bug. Seit Version 1.0 bekannt.",
+      no:"Hardware-Physik aktuell konsistent."
+    }
+  ];
+
+  function simulation(){
+    state.currentSim = rnd(simScenarios);
+    render(`
+      <section class="card">
+        <div class="section-title">Simulationstest</div>
+        <h2>${esc(state.currentSim.q)}</h2>
+        <div class="row">
+          <button class="choice center" onclick="app.simAnswer(true)">JA</button>
+          <button class="choice center" onclick="app.simAnswer(false)">NEIN</button>
+        </div>
+      </section>
+    `);
+  }
+  function simAnswer(yes){
+    const text = yes ? state.currentSim.yes : state.currentSim.no;
+    const pct = Math.floor(48 + Math.random()*47);
+    render(`
+      <section class="card center">
+        <div class="bigword">SIMULATION: ${pct}%</div>
+        <p>${esc(text)}</p>
+        <div class="notice">Beweiskraft dieser Analyse: wissenschaftlich vollständig unhaltbar.</div>
+        <button class="primary" onclick="app.simulation()">WEITER TESTEN</button>
+        <button class="ghost" onclick="app.nonsenseMenu()">Genug Realität</button>
+      </section>
+    `);
+  }
+
+  function matrix(){
+    render(`
+      <section class="card center">
+        <h2>KURZER REALITÄTSCHECK</h2>
+        <p>Du bekommst zwei Pillen.</p>
+        <div class="row">
+          <button class="choice center" onclick="app.matrixBlue()">🔵 Blaue Pille<br><span class="tiny">Zurück zu deinen Aufgaben</span></button>
+          <button class="choice center" onclick="app.matrixRed()">🔴 Rote Pille<br><span class="tiny">Die Wahrheit erfahren</span></button>
+        </div>
+      </section>
+    `);
+  }
+  function matrixBlue(){
+    render(`
+      <section class="card center">
+        <div class="bigword">ERNSTHAFT?</div>
+        <p>Du hattest die Wahl zwischen Wahrheit und Arbeit und hast Arbeit gewählt.</p>
+        <p class="muted">Die Matrix ist beeindruckt und ein bisschen besorgt.</p>
+        <button class="ghost" onclick="app.nonsenseMenu()">Zurück</button>
+      </section>
+    `);
+  }
+  function matrixRed(){
+    render(`
+      <section class="card center">
+        <div class="bigword">DIE WAHRHEIT</div>
+        <p>Du hast gerade auf einen roten Kreis in einer HTML-Datei gedrückt.</p>
+        <div class="notice">Morpheus wäre enttäuscht.</div>
+        <button class="ghost" onclick="app.nonsenseMenu()">Zurück in die Simulation</button>
+      </section>
+    `);
+  }
+
+  function glitch(){
+    const cmds = [
+      "Berühre den nächstgelegenen Gegenstand, der blau ist.",
+      "Schau drei Sekunden ernst auf irgendeinen Gegenstand und tu so, als hättest du gerade etwas Entscheidendes verstanden.",
+      "Dreh dich einmal um und prüfe, ob hinter dir noch dieselbe Realität geladen ist.",
+      "Tippe zweimal auf irgendeinen Tisch. Niemand weiß warum.",
+      "Suche einen Gegenstand, dessen Existenz du heute bisher komplett ignoriert hast.",
+      "Schau kurz aus dem Fenster und bewerte die Grafikqualität.",
+      "Bewege einen Gegenstand exakt fünf Zentimeter und hinterfrage nichts.",
+      "Sag leise „interessant“ und schau dabei auf etwas völlig Banales."
+    ];
+    render(`
+      <section class="card center glitch">
+        <div class="section-title">Glitch erkannt</div>
+        <h2>${esc(rnd(cmds))}</h2>
+        <p class="muted">Du hast 10 Sekunden. Der Sinn wird nicht nachgereicht.</p>
+        <button class="primary" onclick="app.glitchDone()">ERLEDIGT</button>
+      </section>
+    `);
+  }
+  function glitchDone(){
+    const lines=[
+      "Perfekt. Niemand weiß, warum. Einschließlich des Systems.",
+      "Lore erfolgreich erweitert.",
+      "Die Simulation hat die Eingabe akzeptiert.",
+      "Keine sichtbaren Auswirkungen. Genau wie geplant.",
+      "Realität weiterhin erstaunlich stabil."
+    ];
+    render(`
+      <section class="card center">
+        <div class="bigword">GLITCH VERARBEITET</div>
+        <p>${esc(rnd(lines))}</p>
+        <button class="primary" onclick="app.glitch()">NOCH EIN GLITCH</button>
+        <button class="ghost" onclick="app.nonsenseMenu()">Genug Unsinn</button>
+      </section>
+    `);
+  }
+
+  function startTimer(minutes){
+    clearTimer();
+    const endsAt = addActiveTimer(`${minutes}-Minuten-Fokus`, minutes, 'focus');
+    const timerId = state.activeTimers[state.activeTimers.length-1].id;
+    render(`
+      <section class="card center">
+        <div class="section-title">Fokusmodus</div>
+        <h2>Nur dieses eine Ding.</h2>
+        <div class="timer" id="timer">${formatRemaining(endsAt-Date.now())}</div>
+        <p class="muted">Danach darfst du weitermachen oder aufhören. Beides zählt.</p>
+        <button class="ghost" onclick="app.stopSpecificTimer('${timerId}')">Timer beenden</button>
+        <button class="ghost" onclick="app.home()">Zur Startseite – Timer läuft weiter</button>
+      </section>
+    `);
+    state.timer=setInterval(()=>{
+      const remaining = endsAt - Date.now();
+      const el=$('#timer');
+      if(el) el.textContent=formatRemaining(remaining);
+      if(remaining<=0){
+        clearTimer();
+        state.activeTimers = state.activeTimers.filter(t=>t.id!==timerId);
+        save();
+        render(`
+          <section class="card center">
+            <div class="bigword">${minutes} MINUTEN. ENDE.</div>
+            <p>Du darfst weitermachen. Du darfst aufhören.</p>
+            <div class="notice">Das System übernimmt keine Haftung für plötzlich auftretende Produktivität.</div>
+            <button class="ghost" onclick="app.home()">Zurück</button>
+          </section>
+        `);
+      }
+    },1000);
+  }
+  function clearTimer(){
+    if(state.timer){clearInterval(state.timer);state.timer=null;}
+  }
+  function stopSpecificTimer(id){
+    clearTimer();
+    state.activeTimers = state.activeTimers.filter(t=>t.id!==id);
+    save();
+    home();
+  }
+  function stopTimer(){ clearTimer(); home(); }
+
+  document.getElementById('homeBtn').addEventListener('click', home);
+
+  window.app = {
+    home, problemMenu, exhausted, exhaustedAccepted, emergency, emergencyMust, emergencyDoNow, emergencySayNo,
+    buildDelaySentence, emergencyDelegate, buildDelegateSentence, work, workCanSolve, workBlocked, workMissing,
+    workNow, workSchedule, workScheduled, homeStuff, toggleHome, evaluateHome, homeNoNeed, homeComfort, fixHomeTopic,
+    completeHomeTopic, selectOpenHomeTopic, jga, jgaAnswer, decisions, thoughtBan, randomDecision, pickDecision, everything, everythingNo,
+    everythingYes, everythingCan, showNextStep, everythingCant, nonsenseMenu, forbiddenButton, forbiddenPressed,
+    smileTest, smileAnswer, alien, alienAnswer, simulation, simAnswer, matrix, matrixBlue, matrixRed, glitch, glitchDone,
+    startTimer, stopTimer, stopSpecificTimer, removeActiveTimer
+  };
+
+  ensureHomeTimerTicker();
+  home();
+})();
+</script>
+</body>
+</html>
